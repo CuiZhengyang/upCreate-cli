@@ -3,9 +3,10 @@ var program = require('commander');
 var clear =require("clear");
 var figlet =require("figlet");
 var chalk=require("chalk");
+var pack=require("../package")
 
 program
-    .version('1.0.0')
+    .version(pack.version)
     .option('-init <project name>', 'init project with name for local')
 
 
