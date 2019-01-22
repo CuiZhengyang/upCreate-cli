@@ -1,6 +1,6 @@
 {
   "name": "upcreate-cli",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "一个直接可以生成webpack4+babel7+scss/less/postcss+Redux+react-router 的cli工具",
   "main": "index.js",
   "bin": {
@@ -25,5 +25,7 @@
     "babel-eslint": "^10.0.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "babel-preset-latest-node": "^3.0.1"
-  }
+  },
+  "homepage": "https://github.com/CuiZhengyang/upCreate-cli",
+  "keywords": ["webpack4","cli","react-router","react-redux","babel7"]
 }
