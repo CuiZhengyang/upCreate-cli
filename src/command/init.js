@@ -77,7 +77,7 @@ function createProject(dirName) {
     dirPath = path.resolve(process.cwd(), dirName);
     fsUtil.dirExists(dirPath).then((isExist)=>{
         if(isExist){
-            getProjectName("czy' in '/Users/cuizhengyang/WebstormProjects/upCreate-cli' has been created,you need a new name! ").then((dirName) => {
+            getProjectName(dirName+" in '/Users/cuizhengyang/WebstormProjects/upCreate-cli' has been created,you need a new name! ").then((dirName) => {
                 createProject(dirName)
             })
         }
