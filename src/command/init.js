@@ -81,7 +81,7 @@ function createProject(dirName) {
     //判断文件夹是否存在
     if (fsUtil.dirExists(absoluteDirPath)) {
         //如果文件已经存在判断
-        console.log(chalk.red(dirName + " in '" + process.cwd() + "' has been created!!"));
+        console.log(chalk.yellow("Warning:"+dirName + " in '" + process.cwd() + "' has been created!!"));
         //询问是否要删除,重建文件夹
         inquirer.prompt([{
             type: 'confirm',
@@ -120,7 +120,7 @@ function downloadFromGitHub(dirName) {
     }]).then((result)=>{
 
         var gitUrl=map.get(result.templete);
-        console.log(gitUrl,dirName)
+        // console.log(gitUrl,dirName)
         if(!!gitUrl)
         {
             //创建loading
