@@ -1,17 +1,39 @@
 var fs = require("fs");
+const ora = require('../util/oraLoading');
 
-function fsAccess(path) {
-    return new Promise((resolve, reject) => {
-        fs.access(path, fs.constants.F_OK, (err) => {
-            if (!!err)
-                resolve(false)
-            else
-                resolve(true);
-        });
-    })
+
+exports.dirExists = (path) => {
+    return fs.existsSync(path)
 }
 
-exports.dirExists = async (path) => {
-    let result = await fsAccess(path)
-    return Promise.resolve(result);
+function dirRemove(path) {
+    if (fs.existsSync(path)) {
+        var files = [];
+        files = fs.readdirSync(path)
+
+        files.forEach(function (file, index) {
+            var curPath = path + "/" + file;
+            if (fs.statSync(curPath).isDirectory()) { // recurse
+                dirRemove(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
+}
+
+exports.dirRemoveAll = (path) => {
+    const spinner = ora.OraLoading('removing', path);
+    spinner.start();
+    try {
+        dirRemove(path)
+    }
+    catch (e) {
+        console.log(e)
+        spinner.succeed("");
+    }
+    finally {
+        spinner.succeed("");
+    }
 }
