@@ -109,7 +109,6 @@ function downloadFromGitHub(dirName) {
         ["react+react-router+redux+immutable","direct:https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git"],
         ["react+react-router+redux","direct:https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git#ReactRedux"],
         ["react+react-router","direct:https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git#ReactRouter"],
-        ["react+react-router1","direct:https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git#Rea"],
     ])
 
     inquirer.prompt([{
