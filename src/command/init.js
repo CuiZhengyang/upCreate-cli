@@ -37,22 +37,10 @@ function inputQuestion(discription, resolve) {
         message: discription,
     }]).then((answers) => {
         if (answers.dirName.length == 0) {
-            return Promise.resolve({
-                isAgainToken: true,
-                discription: "project name can't be empty,try again!"
-            });
+            inputQuestion("project name can't be empty,try again!",resolve)
         }
-        return Promise.resolve({
-            isAgainToken: false,
-            dirName: answers.dirName
-        });
-
-    }).then((result) => {
-        if (result.isAgainToken) {
-            inputQuestion(result.discription, resolve)
-        }
-        else {
-            resolve(result.dirName)
+        else{
+            resolve(answers.dirName)
         }
     })
 
