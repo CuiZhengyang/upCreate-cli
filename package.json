@@ -18,6 +18,7 @@
     "download-git-repo": "^1.1.0",
     "figlet": "^1.2.1",
     "inquirer": "^6.2.1",
+    "node-cmd": "^3.0.0",
     "ora": "^3.0.0"
   },
   "homepage": "https://github.com/CuiZhengyang/upCreate-cli",
