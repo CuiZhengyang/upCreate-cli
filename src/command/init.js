@@ -187,8 +187,8 @@ function downloadFromGitHub(dirName) {
                 process.chdir(dirName);
                 var pkg = require(absoluteDirPath + "/package.json");
                 var dependencArray = !!pkg.dependencies && Object.keys(pkg.dependencies)|| [];
-                var devDependenceArray = !!pkg.devDependencies && Object.keys(pkg.devDependencies).reverse()  || [];
-                commandArray = [...devDependenceArray, ...dependencArray]
+                var devDependenceArray = !!pkg.devDependencies && Object.keys(pkg.devDependencies) || [];
+                commandArray = [...dependencArray, ...devDependenceArray]
 
                 console.log(chalk.green('npm install dependence,this step will take a little time, please wait!'))
 
