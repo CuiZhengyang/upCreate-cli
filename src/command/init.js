@@ -21,7 +21,6 @@ function* doCommand() {
         let spinner2 = ora.OraLoading(chalk.green(`npm install ${cmd}`));
         spinner2.start();
         yield exec(`npm install ${cmd}`, (err, stdout, stderr) => {
-            spinner2.succeed(`npm install ${cmd},Done!!`)
             if (err) {
                 hasError=true;
                 console.log(chalk.red('Error:', +err))
@@ -30,7 +29,7 @@ function* doCommand() {
                 console.log("")
                 console.log(stdout);
             }
-
+            spinner2.succeed(`Done!!`)
             console.log("")
             emitter.emit("nextCmd");
         });
