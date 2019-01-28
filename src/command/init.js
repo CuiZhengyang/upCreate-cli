@@ -9,6 +9,62 @@ const chalk = require('chalk')
 const cmd = require('node-cmd');
 var figlet = require("figlet");
 
+const EventEmitter = require('events');
+var emitter = new EventEmitter();
+const {exec} = require('child_process');
+
+let commandArray = [];
+let doCmd = null, hasError = false, doResult = {};
+
+function* doCommand() {
+    for (let cmd of commandArray) {
+        let spinner2 = ora.OraLoading(chalk.green(`npm install ${cmd}`));
+        spinner2.start();
+        yield exec(`npm install ${cmd}`, (err, stdout, stderr) => {
+            spinner2.succeed(`npm install ${cmd},Done!!`)
+            if (err) {
+                hasError=true;
+                console.log(chalk.red('Error:', +err))
+            }
+            else {
+                console.log("")
+                console.log(stdout);
+            }
+
+            console.log("")
+            emitter.emit("nextCmd");
+        });
+    }
+    console.log(chalk.green('Your project has been created successfully!'));
+    console.log(chalk.green("Your can run 'npm run dev' to start hot server!"));
+    console.log(chalk.green("Your can run 'npm run buld' to create product files!"));
+    console.log(chalk.green(figlet.textSync('thanks  use !',
+        {
+            font: 'Ghost',
+            horizontalLayout: 'default',
+            verticalLayout: 'default'
+        })));
+
+}
+
+emitter.on("nextCmd", () => {
+    if (hasError) {
+        console.log(chalk.red('An error occurred while npm install, please correct the error，and then'));
+        console.log(chalk.green("You can run 'npm run dev' to start hot server!"));
+        console.log(chalk.green("You can run 'npm run buld' to create product files!"));
+        console.log(chalk.green(figlet.textSync('thanks  use !',
+            {
+                font: 'Ghost',
+                horizontalLayout: 'default',
+                verticalLayout: 'default'
+            })));
+    }
+    else if (!!doCmd) {
+        doResult = doCmd.next()
+    }
+})
+
+
 program
     .command('init')
     .description('init project for local')
@@ -95,7 +151,6 @@ function createProject(dirName) {
     }
 }
 
-var dependences = [];
 
 //从github上下载文件
 function downloadFromGitHub(dirName) {
@@ -132,71 +187,17 @@ function downloadFromGitHub(dirName) {
 
                 process.chdir(dirName);
                 var pkg = require(absoluteDirPath + "/package.json");
-                var array = !!pkg.dependencies && Object.keys(pkg.dependencies) || [];
-                var array2 = !!pkg.devDependencies && Object.keys(pkg.devDependencies) || [];
-                dependences = [...array, ...array2]
+                var dependencArray = !!pkg.dependencies && Object.keys(pkg.dependencies)|| [];
+                var devDependenceArray = !!pkg.devDependencies && Object.keys(pkg.devDependencies).reverse()  || [];
+                commandArray = [...devDependenceArray, ...dependencArray]
 
-                // console.log(chalk.green('npm install dependence,this step will take a little time, please wait!'))
-                // installDependence(0);
+                console.log(chalk.green('npm install dependence,this step will take a little time, please wait!'))
 
-                const spinner2 = ora.OraLoading(chalk.green('npm install dependence,this step will take a little time, please wait!'));
-                spinner2.start();
-                cmd.get(`npm install`,
-                    function (err, data, stderr) {
-                        spinner2.succeed(chalk.green("Done!!"));
-                        if (!err) {
-                            console.log(chalk.green('Your project has been created successfully!'));
-                            console.log(chalk.green("Your can run 'npm run dev' to start hot server!"));
-                            console.log(chalk.green("Your can run 'npm run buld' to create product files!"));
-                            console.log(chalk.green(figlet.textSync('thanks  use !',
-                                {
-                                    font: 'Ghost',
-                                    horizontalLayout: 'default',
-                                    verticalLayout: 'default'
-                                })));
-                        } else {
-                            console.log(chalk.red('Error:', +err))
-                        }
-
-                    }
-                );
-
+                doCmd = doCommand();
+                doResult = doCmd.next();
 
             })
         }
 
     })
 }
-
-// function installDependence(i) {
-//     console.log(i)
-//     if (dependences.length == 0) {
-//         return;
-//     }
-//     if (dependences.length == i) {
-//         console.log(chalk.green('Your project has been created successfully!'));
-//         console.log(chalk.green("Your can run 'npm run dev' to start hot server!"));
-//         console.log(chalk.green("Your can run 'npm run buld' to create product files!"));
-//         console.log(chalk.green(figlet.textSync('thanks  use !',
-//             {
-//                 font: 'Ghost',
-//                 horizontalLayout: 'default',
-//                 verticalLayout: 'default'
-//             })));
-//         return;
-//     }
-//     let spinner2 = ora.OraLoading(chalk.green('npm install ' + dependences[i]));
-//     spinner2.start();
-//     cmd.get(`npm install ${dependences[i]}`,
-//         function (err, data, stderr) {
-//             if (!err) {
-//                 spinner2.succeed(chalk.green("Done!!"));
-//                 installDependence(i + 1);
-//             } else {
-//                 spinner2.succeed(chalk.green("Error!!"));
-//                 console.log(chalk.red('Error:', +err))
-//             }
-//
-//         }
-//     );
-// }

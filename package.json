@@ -12,6 +12,7 @@
   "author": "czy",
   "license": "ISC",
   "dependencies": {
+    "@babel/polyfill": "^7.2.5",
     "chalk": "^2.4.2",
     "clear": "^0.1.0",
     "commander": "^2.19.0",
