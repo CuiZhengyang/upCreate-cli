@@ -15,7 +15,7 @@ program
 console.log(
     chalk.green(
         figlet.textSync('UPCREATE', {horizontalLayout: 'full'}) + '\n',
-        chalk.green('-----------------------this made by Cui Zhengyang\n')
+        chalk.green('-----------------------this was made by Cui Zhengyang\n')
     )
 );
 console.log(chalk.green('*************************************************************************************\n'))
