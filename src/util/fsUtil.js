@@ -22,6 +22,9 @@ function dirRemove(path) {
         fs.rmdirSync(path);
     }
 }
+exports.dirRemove=(path)=>{
+    dirRemove(path)
+};
 
 exports.dirRemoveAll = (path) => {
     const spinner = ora.OraLoading('removing', path);

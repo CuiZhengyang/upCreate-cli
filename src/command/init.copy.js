@@ -3,57 +3,36 @@ var program = require('commander');
 var path = require('path');
 var fsUtil = require("../util/fsUtil");
 var absoluteDirPath = "";
-const clone = require('git-clone');
-
+const download = require('download-git-repo')
 const ora = require('../util/oraLoading');
 const chalk = require('chalk')
+const cmd = require('node-cmd');
 var figlet = require("figlet");
 
 const EventEmitter = require('events');
 var emitter = new EventEmitter();
-const {exec, spawn} = require('child_process');
+const {exec} = require('child_process');
 
 let commandArray = [];
 let doCmd = null, hasError = false, doResult = {};
 
 function* doCommand() {
     for (let cmd of commandArray) {
-        let spinner2 = ora.OraLoading(chalk.green(`npm install ${cmd}\n`));
+        let spinner2 = ora.OraLoading(chalk.green(`npm install ${cmd}`));
         spinner2.start();
-        // yield exec(`npm install ${cmd}`, (err, stdout, stderr) => {
-        //     if (err) {
-        //         hasError=true;
-        //         console.log(chalk.red(`Error:${err}`))
-        //     }
-        //     else {
-        //         console.log("")
-        //         console.log(stdout);
-        //     }
-        //     spinner2.succeed(`Done!!`)
-        //     console.log("")
-        //     emitter.emit("nextCmd");
-        // });
-
-        let npm = spawn('npm', ['install', cmd], {
-            shell: true,
-            cwd: absoluteDirPath,
-            detached: true,
-            windowsHide: true
-        });
-        npm.stdout.on('data', (data) => {
-            console.log(`${data}`);
-        });
-        npm.stderr.on('data', (err) => {
-            if (!!err && err.indexOf("npm") != 0 && err.indexOf("WARN") != 0) {
-                // hasError=true;
-                console.log(chalk.red(`Error:${err}`))
+        yield exec(`npm install ${cmd}`, (err, stdout, stderr) => {
+            if (err) {
+                hasError=true;
+                console.log(chalk.red('Error:', +err))
             }
-        });
-        npm.on('close', (code) => {
-            spinner2.succeed(`Done!!\n`)
+            else {
+                console.log("")
+                console.log(stdout);
+            }
+            spinner2.succeed(`Done!!`)
+            console.log("")
             emitter.emit("nextCmd");
         });
-        yield;
     }
     console.log(chalk.green('Your project has been created successfully!'));
     console.log(chalk.green("Your can run 'npm run dev' to start hot server!"));
@@ -175,9 +154,9 @@ function createProject(dirName) {
 //从github上下载文件
 function downloadFromGitHub(dirName) {
     var map = new Map([
-        ["react+react-router+redux+immutable", "master"],
-        ["react+react-router+redux", "ReactRedux"],
-        ["react+react-router", "ReactRouter"],
+        ["react+react-router+redux+immutable", "direct:https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git"],
+        ["react+react-router+redux", "direct:https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git#ReactRedux"],
+        ["react+react-router", "direct:https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git#ReactRouter"],
     ])
 
     inquirer.prompt([{
@@ -194,12 +173,9 @@ function downloadFromGitHub(dirName) {
             const spinner = ora.OraLoading('generating', absoluteDirPath);
             //打开loading
             spinner.start();
-            var url = "https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git";
 
-            clone(url, dirName, {
-                shallow: true,
-                checkout: gitUrl
-            }, function (err) {
+            download(gitUrl, dirName, {clone: true}, function (err) {
+                //关闭loading
                 spinner.stop();
                 if (!!err) {
                     console.log(chalk.red(err))
@@ -207,43 +183,21 @@ function downloadFromGitHub(dirName) {
                 }
                 //编写配置文件，放到相应的文件夹下面
                 spinner.succeed(chalk.green(`generated '${absoluteDirPath}' successed`));
+
                 process.chdir(dirName);
-                fsUtil.dirRemove(".git");
-                // var pkg = require(absoluteDirPath + "/package.json");
-                // var dependencArray = !!pkg.dependencies && Object.keys(pkg.dependencies)|| [];
-                // var devDependenceArray = !!pkg.devDependencies && Object.keys(pkg.devDependencies) || [];
-                // commandArray = [...dependencArray, ...devDependenceArray]
+                var pkg = require(absoluteDirPath + "/package.json");
+                var dependencArray = !!pkg.dependencies && Object.keys(pkg.dependencies)|| [];
+                var devDependenceArray = !!pkg.devDependencies && Object.keys(pkg.devDependencies) || [];
+                commandArray = [...dependencArray, ...devDependenceArray]
 
                 console.log(chalk.green('npm install dependence,this step will take a little time, please wait!'))
 
-                // doCmd = doCommand();
-                // doResult = doCmd.next();
+                doCmd = doCommand();
+                doResult = doCmd.next();
 
-                let npm = spawn('npm', ['install'], {
-                    shell: true,
-                    cwd: absoluteDirPath,
-                    detached: true,
-                    windowsHide: true
-                });
-                npm.stdout.on('data', (data) => {
-                    console.log(`${data}`);
-                });
-
-                npm.on('close', (code) => {
-                    spinner2.succeed(`Done!!\n`)
-                    console.log(chalk.green('Your project has been created successfully!'));
-                    console.log(chalk.green("Your can run 'npm run dev' to start hot server!"));
-                    console.log(chalk.green("Your can run 'npm run buld' to create product files!"));
-                    console.log(chalk.green(figlet.textSync('thanks  use !',
-                        {
-                            font: 'Ghost',
-                            horizontalLayout: 'default',
-                            verticalLayout: 'default'
-                        })));
-                });
             })
-
         }
 
     })
 }
+

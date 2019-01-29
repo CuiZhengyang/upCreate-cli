@@ -12,14 +12,12 @@
   "author": "czy",
   "license": "ISC",
   "dependencies": {
-    "@babel/polyfill": "^7.2.5",
     "chalk": "^2.4.2",
     "clear": "^0.1.0",
     "commander": "^2.19.0",
-    "download-git-repo": "^1.1.0",
     "figlet": "^1.2.1",
+    "git-clone": "^0.1.0",
     "inquirer": "^6.2.1",
-    "node-cmd": "^3.0.0",
     "ora": "^3.0.0"
   },
   "homepage": "https://github.com/CuiZhengyang/upCreate-cli",
