@@ -6,7 +6,6 @@ var absoluteDirPath = "";
 const download = require('download-git-repo')
 const ora = require('../util/oraLoading');
 const chalk = require('chalk')
-const cmd = require('node-cmd');
 var figlet = require("figlet");
 
 const EventEmitter = require('events');

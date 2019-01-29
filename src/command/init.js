@@ -4,85 +4,12 @@ var path = require('path');
 var fsUtil = require("../util/fsUtil");
 var absoluteDirPath = "";
 const clone = require('git-clone');
-
 const ora = require('../util/oraLoading');
 const chalk = require('chalk')
 var figlet = require("figlet");
+const {spawn} = require('child_process');
 
-const EventEmitter = require('events');
-var emitter = new EventEmitter();
-const {exec, spawn} = require('child_process');
 
-let commandArray = [];
-let doCmd = null, hasError = false, doResult = {};
-
-function* doCommand() {
-    for (let cmd of commandArray) {
-        let spinner2 = ora.OraLoading(chalk.green(`npm install ${cmd}\n`));
-        spinner2.start();
-        // yield exec(`npm install ${cmd}`, (err, stdout, stderr) => {
-        //     if (err) {
-        //         hasError=true;
-        //         console.log(chalk.red(`Error:${err}`))
-        //     }
-        //     else {
-        //         console.log("")
-        //         console.log(stdout);
-        //     }
-        //     spinner2.succeed(`Done!!`)
-        //     console.log("")
-        //     emitter.emit("nextCmd");
-        // });
-
-        let npm = spawn('npm', ['install', cmd], {
-            shell: true,
-            cwd: absoluteDirPath,
-            detached: true,
-            windowsHide: true
-        });
-        npm.stdout.on('data', (data) => {
-            console.log(`${data}`);
-        });
-        npm.stderr.on('data', (err) => {
-            if (!!err && err.indexOf("npm") != 0 && err.indexOf("WARN") != 0) {
-                // hasError=true;
-                console.log(chalk.red(`Error:${err}`))
-            }
-        });
-        npm.on('close', (code) => {
-            spinner2.succeed(`Done!!\n`)
-            emitter.emit("nextCmd");
-        });
-        yield;
-    }
-    console.log(chalk.green('Your project has been created successfully!'));
-    console.log(chalk.green("Your can run 'npm run dev' to start hot server!"));
-    console.log(chalk.green("Your can run 'npm run buld' to create product files!"));
-    console.log(chalk.green(figlet.textSync('thanks  use !',
-        {
-            font: 'Ghost',
-            horizontalLayout: 'default',
-            verticalLayout: 'default'
-        })));
-
-}
-
-emitter.on("nextCmd", () => {
-    if (hasError) {
-        console.log(chalk.red('An error occurred while npm install, please correct the error，and then'));
-        console.log(chalk.green("You can run 'npm run dev' to start hot server!"));
-        console.log(chalk.green("You can run 'npm run buld' to create product files!"));
-        console.log(chalk.green(figlet.textSync('thanks  use !',
-            {
-                font: 'Ghost',
-                horizontalLayout: 'default',
-                verticalLayout: 'default'
-            })));
-    }
-    else if (!!doCmd) {
-        doResult = doCmd.next()
-    }
-})
 
 
 program
@@ -209,15 +136,8 @@ function downloadFromGitHub(dirName) {
                 spinner.succeed(chalk.green(`generated '${absoluteDirPath}' successed`));
                 process.chdir(dirName);
                 fsUtil.dirRemove(".git");
-                // var pkg = require(absoluteDirPath + "/package.json");
-                // var dependencArray = !!pkg.dependencies && Object.keys(pkg.dependencies)|| [];
-                // var devDependenceArray = !!pkg.devDependencies && Object.keys(pkg.devDependencies) || [];
-                // commandArray = [...dependencArray, ...devDependenceArray]
 
                 console.log(chalk.green('npm install dependence,this step will take a little time, please wait!'))
-
-                // doCmd = doCommand();
-                // doResult = doCmd.next();
 
                 let npm = spawn('npm', ['install'], {
                     shell: true,
