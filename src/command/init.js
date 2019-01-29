@@ -230,7 +230,6 @@ function downloadFromGitHub(dirName) {
                 });
 
                 npm.on('close', (code) => {
-                    spinner2.succeed(`Done!!\n`)
                     console.log(chalk.green('Your project has been created successfully!'));
                     console.log(chalk.green("Your can run 'npm run dev' to start hot server!"));
                     console.log(chalk.green("Your can run 'npm run buld' to create product files!"));
