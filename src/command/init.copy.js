@@ -152,6 +152,7 @@ function createProject(dirName) {
 
 //从github上下载文件
 function downloadFromGitHub(dirName) {
+    absoluteDirPath = path.resolve(process.cwd(), dirName);
     var map = new Map([
         ["react+react-router+redux+immutable", "direct:https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git"],
         ["react+react-router+redux", "direct:https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git#ReactRedux"],
@@ -200,3 +201,6 @@ function downloadFromGitHub(dirName) {
     })
 }
 
+module.exports={
+    do:downloadFromGitHub
+}

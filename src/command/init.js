@@ -3,7 +3,7 @@ var program = require('commander');
 var path = require('path');
 var fsUtil = require("../util/fsUtil");
 var absoluteDirPath = "";
-const clone = require('git-clone');
+const clone = require('../util/git').clone;
 const ora = require('../util/oraLoading');
 const chalk = require('chalk')
 var figlet = require("figlet");
@@ -114,18 +114,19 @@ function downloadFromGitHub(dirName) {
         message: "What kind of template do you want?"
     }]).then((result) => {
 
-        var gitUrl = map.get(result.templete);
+        var branch = map.get(result.templete);
         // console.log(gitUrl,dirName)
-        if (!!gitUrl) {
+        if (!!branch) {
             //创建loading
             const spinner = ora.OraLoading('generating', absoluteDirPath);
             //打开loading
             spinner.start();
-            var url = "https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git";
+            var repo = "https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git";
 
-            clone(url, dirName, {
-                shallow: true,
-                checkout: gitUrl
+            clone({
+                repo,
+                branch,
+                targetPath:dirName
             }, function (err) {
                 spinner.stop();
                 if (!!err) {
@@ -139,11 +140,11 @@ function downloadFromGitHub(dirName) {
 
                 console.log(chalk.green('npm install dependence,this step will take a little time, please wait!'))
 
-                let npm = spawn('npm', ['install'], {
-                    shell: true,
+                let npm = spawn(process.platform=="win32"?'npm.cmd':'npm', ['install'], {
+                    // shell: true,
                     cwd: absoluteDirPath,
-                    detached: true,
-                    windowsHide: true
+                    // detached: true,
+                    // windowsHide: true
                 });
                 npm.stdout.on('data', (data) => {
                     console.log(`${data}`);
