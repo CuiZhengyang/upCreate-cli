@@ -133,7 +133,7 @@ function downloadFromGitHub(dirName) {
             const spinner = ora.OraLoading('generating', absoluteDirPath);
             //打开loading
             spinner.start();
-            var repo = "https://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git";
+            var repo = "git://github.com/CuiZhengyang/webpack4-babel7-react-router-redux.git";
 
             clone({
                 repo,
