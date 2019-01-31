@@ -9,7 +9,7 @@ const chalk = require('chalk')
 var figlet = require("figlet");
 const {spawn} = require('child_process');
 
-
+const registries=require("../util/registrys").registry
 
 
 program
@@ -99,6 +99,7 @@ function createProject(dirName) {
 }
 
 
+
 //从github上下载文件
 function downloadFromGitHub(dirName) {
     var map = new Map([
@@ -107,12 +108,23 @@ function downloadFromGitHub(dirName) {
         ["react+react-router", "ReactRouter"],
     ])
 
+    let regKeyArray=Object.keys(registries);
+
+    let registriesArray=regKeyArray.map((item)=>{
+        return item.padEnd(10,'-')+registries[item].registry;
+    })
+
     inquirer.prompt([{
         type: 'list',
         name: 'templete',
         choices: [...map.keys()],
         message: "What kind of template do you want?"
-    }]).then((result) => {
+    },{
+        type: 'list',
+        name: 'registry',
+        choices: [...registriesArray],
+        message: "Which source? （If you can't access the Internet, you are advised to use Taobao.）"
+    },]).then((result) => {
 
         var branch = map.get(result.templete);
         // console.log(gitUrl,dirName)
@@ -138,9 +150,11 @@ function downloadFromGitHub(dirName) {
                 process.chdir(dirName);
                 fsUtil.dirRemove(".git");
 
-                console.log(chalk.green('npm install dependence,this step will take a little time, please wait!'))
+                console.log(chalk.green('npm install dependence,this step will take a little time, please wait! or you can Press Ctrl+c and "npm install" by yourself'))
 
-                let npm = spawn(process.platform=="win32"?'npm.cmd':'npm', ['install'], {
+                let rg=result.registry.split('-')[0]
+
+                let npm = spawn(process.platform=="win32"?'npm.cmd':'npm', ['install','--registry',registries[rg].registry], {
                     // shell: true,
                     cwd: absoluteDirPath,
                     // detached: true,
